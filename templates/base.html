@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="uz" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CarTech - Avtomobil ehtiyot qismlari va aksessuarlari{% endblock %}</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                            dark: '#0f172a',
+                            card: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* No scrollbar utility */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen selection:bg-rose-500 selection:text-white">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-4">
+                <span><i class="fa-solid fa-truck-fast text-rose-500 mr-1.5"></i> Toshkent bo'ylab 2 soat ichida yetkazib berish!</span>
+                <span class="hidden md:inline text-slate-600">|</span>
+                <span class="hidden md:inline"><i class="fa-solid fa-shield-halved text-rose-500 mr-1.5"></i> 100% Original ehtiyot qismlar</span>
+            </div>
+            <div class="flex items-center space-x-6">
+                <a href="tel:+998712000000" class="hover:text-white transition flex items-center">
+                    <i class="fa-solid fa-phone text-rose-500 mr-1.5"></i> +998 (71) 200-00-00
+                </a>
+                <span class="text-slate-600">|</span>
+                <div class="flex items-center space-x-2">
+                    <a href="#" class="hover:text-rose-400 transition"><i class="fa-brands fa-telegram"></i></a>
+                    <a href="#" class="hover:text-rose-400 transition"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Logo -->
+                <a href="{% url 'home' %}" class="flex items-center gap-3 group shrink-0">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-rose-600 to-red-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/25 group-hover:scale-105 transition-transform duration-200">
+                        <i class="fa-solid fa-car-rear text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-extrabold tracking-tight text-slate-900 group-hover:text-rose-600 transition-colors">
+                            Car<span class="text-rose-600 group-hover:text-slate-900 transition-colors">Tech</span>
+                        </span>
+                        <p class="text-[10px] font-semibold text-slate-400 -mt-1 tracking-wider uppercase">Auto Parts Store</p>
+                    </div>
+                </a>
+
+                <!-- Search Bar -->
+                <form action="{% url 'product_list' %}" method="GET" class="hidden md:flex flex-1 max-w-xl mx-4">
+                    <div class="relative w-full">
+                        <input type="text" name="q" value="{{ request.GET.q|default:'' }}"
+                               placeholder="Qism nomi, artikul (SKU) yoki brend..." 
+                               class="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-full pl-11 pr-24 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition duration-150">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-full transition shadow-sm">
+                            Qidirish
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Actions: Cart, User -->
+                <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+                    <!-- Catalog button -->
+                    <a href="{% url 'product_list' %}" class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm transition">
+                        <i class="fa-solid fa-bars-staggered text-rose-600"></i>
+                        <span>Katalog</span>
+                    </a>
+
+                    <!-- Cart Button -->
+                    <a href="{% url 'cart_detail' %}" class="relative p-2.5 text-slate-700 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 rounded-xl transition flex items-center gap-2 group">
+                        <i class="fa-solid fa-cart-shopping text-lg"></i>
+                        <span class="hidden sm:inline font-semibold text-sm">Savat</span>
+                        {% if cart_count > 0 %}
+                            <span class="absolute -top-1 -right-1 bg-rose-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-pulse">
+                                {{ cart_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <!-- Admin Quick Button -->
+                    {% if user.is_staff %}
+                        <a href="{% url 'mgmt_dashboard' %}" class="hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold transition shadow-sm">
+                            <i class="fa-solid fa-crown text-amber-500"></i>
+                            <span>Boshqaruv</span>
+                        </a>
+                    {% endif %}
+
+                    <!-- User Account -->
+                    {% if user.is_authenticated %}
+                        <div class="relative group">
+                            <a href="{% url 'dashboard' %}" class="flex items-center gap-2 p-1.5 pl-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl text-sm font-semibold transition shadow-sm">
+                                <i class="fa-solid fa-chart-pie text-rose-500 text-xs"></i>
+                                <span class="max-w-[100px] truncate">Kabinet</span>
+                                <div class="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-xs">
+                                    {{ user.first_name|default:user.username|slice:":1"|upper }}
+                                </div>
+                            </a>
+                            <!-- Dropdown -->
+                            <div class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 hidden group-hover:block transition z-50">
+                                <div class="px-4 py-2 border-b border-slate-100">
+                                    <p class="text-xs text-slate-400">Tizimga kirilgan:</p>
+                                    <p class="text-sm font-bold text-slate-800 truncate">{{ user.first_name|default:user.username }}</p>
+                                </div>
+                                {% if user.is_staff %}
+                                <a href="{% url 'mgmt_dashboard' %}" class="flex items-center px-4 py-2.5 text-sm text-amber-900 bg-amber-50 hover:bg-amber-100 font-bold border-b border-amber-100/50">
+                                    <i class="fa-solid fa-crown mr-2.5 w-4 text-amber-600"></i> Do'kon Boshqaruvi
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'dashboard' %}" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-rose-50 hover:text-rose-600 font-semibold">
+                                    <i class="fa-solid fa-chart-pie mr-2.5 w-4 text-rose-500"></i> Dashboard
+                                </a>
+                                <a href="{% url 'dashboard_orders' %}" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-rose-50 hover:text-rose-600">
+                                    <i class="fa-solid fa-box mr-2.5 w-4 text-slate-400"></i> Buyurtmalarim
+                                </a>
+                                <a href="{% url 'dashboard_garage' %}" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-rose-50 hover:text-rose-600">
+                                    <i class="fa-solid fa-warehouse mr-2.5 w-4 text-slate-400"></i> Mening Garajim
+                                </a>
+                                <a href="{% url 'dashboard_profile' %}" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-rose-50 hover:text-rose-600">
+                                    <i class="fa-regular fa-user mr-2.5 w-4 text-slate-400"></i> Profil sozlamalari
+                                </a>
+                                {% if user.is_staff %}
+                                <a href="{% url 'admin:index' %}" target="_blank" class="flex items-center px-4 py-2 text-xs text-slate-500 hover:bg-slate-50">
+                                    <i class="fa-solid fa-database mr-2.5 w-4 text-slate-400"></i> Django Admin (DB)
+                                </a>
+                                {% endif %}
+                                <div class="border-t border-slate-100 my-1"></div>
+                                <a href="{% url 'logout' %}" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                    <i class="fa-solid fa-arrow-right-from-bracket mr-2.5 w-4"></i> Chiqish
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-rose-600 hover:bg-slate-100 rounded-xl transition">
+                            Kirish
+                        </a>
+                        <a href="{% url 'register' %}" class="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md shadow-rose-600/20 transition">
+                            Ro'yxatdan o'tish
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="md:hidden pb-3">
+                <form action="{% url 'product_list' %}" method="GET">
+                    <div class="relative w-full">
+                        <input type="text" name="q" value="{{ request.GET.q|default:'' }}"
+                               placeholder="Qism nomi yoki artikul..." 
+                               class="w-full bg-slate-100 border border-slate-200 text-slate-900 text-sm rounded-xl pl-10 pr-20 py-2.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-rose-600 text-white text-xs font-semibold rounded-lg">
+                            Izlash
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sub Navigation Bar (Categories & Popular Brands) -->
+        <nav class="bg-slate-900 text-white border-t border-slate-800 hidden md:block">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between text-xs font-medium py-2.5 overflow-x-auto no-scrollbar">
+                    <div class="flex items-center space-x-6">
+                        <a href="{% url 'product_list' %}" class="flex items-center gap-1.5 text-rose-400 hover:text-rose-300 font-bold transition">
+                            <i class="fa-solid fa-grip"></i> Barcha mahsulotlar
+                        </a>
+                        {% for cat in nav_categories %}
+                            <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-slate-300 hover:text-white transition whitespace-nowrap">
+                                {{ cat.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="flex items-center space-x-4 pl-4 text-slate-400">
+                        <span class="text-slate-600">|</span>
+                        <span class="text-slate-400">Markalar:</span>
+                        {% for brand in nav_brands|slice:":5" %}
+                            <a href="{% url 'product_list' %}?brand={{ brand.id }}" class="hover:text-rose-400 transition font-semibold">
+                                {{ brand.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Django Messages Alerts -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        {% for message in messages %}
+            <div class="flex items-center p-4 mb-3 rounded-2xl text-sm border 
+                {% if message.tags == 'success' %} bg-emerald-50 border-emerald-200 text-emerald-800 
+                {% elif message.tags == 'error' %} bg-rose-50 border-rose-200 text-rose-800 
+                {% elif message.tags == 'warning' %} bg-amber-50 border-amber-200 text-amber-800 
+                {% else %} bg-sky-50 border-sky-200 text-sky-800 {% endif %}">
+                <div class="mr-3 text-lg">
+                    {% if message.tags == 'success' %}<i class="fa-solid fa-circle-check"></i>
+                    {% elif message.tags == 'error' %}<i class="fa-solid fa-circle-exclamation"></i>
+                    {% elif message.tags == 'warning' %}<i class="fa-solid fa-triangle-exclamation"></i>
+                    {% else %}<i class="fa-solid fa-circle-info"></i>{% endif %}
+                </div>
+                <div class="flex-1 font-medium">{{ message }}</div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Block -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-400 pt-16 pb-8 border-t border-slate-800 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
+                
+                <!-- Brand Info -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-red-500 flex items-center justify-center text-white shadow-lg">
+                            <i class="fa-solid fa-car-rear text-lg"></i>
+                        </div>
+                        <span class="text-2xl font-extrabold text-white tracking-tight">Car<span class="text-rose-500">Tech</span></span>
+                    </div>
+                    <p class="text-sm leading-relaxed text-slate-400 max-w-sm">
+                        O'zbekistondagi barcha turdagi yengil avtomobillar uchun original va sifatli ehtiyot qismlar, avtomoylar hamda zamonaviy avto-aksessuarlar do'koni.
+                    </p>
+                    <div class="flex items-center space-x-3 pt-2">
+                        <a href="#" class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-rose-600 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-telegram"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-rose-600 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-rose-600 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-rose-600 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Fast Links -->
+                <div>
+                    <h4 class="text-white font-bold text-sm tracking-wider uppercase mb-4">Bo'limlar</h4>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="{% url 'home' %}" class="hover:text-white transition">Bosh sahifa</a></li>
+                        <li><a href="{% url 'product_list' %}" class="hover:text-white transition">Katalog</a></li>
+                        <li><a href="{% url 'cart_detail' %}" class="hover:text-white transition">Savatcha</a></li>
+                        <li><a href="{% url 'my_orders' %}" class="hover:text-white transition">Buyurtmalarim</a></li>
+                        <li><a href="{% url 'profile' %}" class="hover:text-white transition">Shaxsiy kabinet</a></li>
+                    </ul>
+                </div>
+
+                <!-- Categories -->
+                <div>
+                    <h4 class="text-white font-bold text-sm tracking-wider uppercase mb-4">Toifalar</h4>
+                    <ul class="space-y-2.5 text-sm">
+                        {% for cat in nav_categories|slice:":5" %}
+                        <li><a href="{% url 'product_list' %}?category={{ cat.slug }}" class="hover:text-white transition">{{ cat.name }}</a></li>
+                        {% empty %}
+                        <li><span class="text-slate-500">Moy va filtrlar</span></li>
+                        <li><span class="text-slate-500">Tormoz tizimi</span></li>
+                        <li><span class="text-slate-500">Dvigatel qismlari</span></li>
+                        <li><span class="text-slate-500">Elektronika</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-white font-bold text-sm tracking-wider uppercase mb-4">Aloqa & Manzil</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-location-dot text-rose-500 mt-1 mr-2.5"></i>
+                            <span>Toshkent sh., Chilonzor tumani, Bunyodkor shoh ko'chasi 42</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-phone text-rose-500 mr-2.5"></i>
+                            <a href="tel:+998712000000" class="hover:text-white transition">+998 (71) 200-00-00</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-envelope text-rose-500 mr-2.5"></i>
+                            <span>support@cartech.uz</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-clock text-rose-500 mr-2.5"></i>
+                            <span>Har kuni: 09:00 - 21:00</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Bottom Copyright & Payment Methods -->
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                <p>&copy; 2026 CarTech Inc. Barcha huquqlar himoyalangan.</p>
+                <div class="flex items-center space-x-3 text-slate-400">
+                    <span class="px-2 py-1 bg-slate-900 rounded border border-slate-800 text-[10px] font-bold">PAYME</span>
+                    <span class="px-2 py-1 bg-slate-900 rounded border border-slate-800 text-[10px] font-bold">CLICK</span>
+                    <span class="px-2 py-1 bg-slate-900 rounded border border-slate-800 text-[10px] font-bold">UZCARD</span>
+                    <span class="px-2 py-1 bg-slate-900 rounded border border-slate-800 text-[10px] font-bold">HUMO</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

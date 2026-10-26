@@ -1,0 +1,240 @@
+{% extends 'accounts/dashboard/base_dashboard.html' %}
+
+{% block title %}Dashboard | CarTech{% endblock %}
+{% block header_title %}Umumiy ko'rinish{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-8 max-w-7xl mx-auto">
+    
+    <!-- WELCOME BANNER -->
+    <div class="relative bg-gradient-to-r from-rose-900 via-rose-800 to-slate-900 rounded-3xl p-6 sm:p-8 border border-rose-700/50 shadow-2xl overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+            <i class="fa-solid fa-gauge-high text-[180px]"></i>
+        </div>
+        <div class="relative z-10 max-w-xl space-y-2">
+            <span class="px-3 py-1 bg-white/10 text-rose-300 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                Xush kelibsiz
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
+                Salom, {{ user.first_name|default:user.username }}!
+            </h2>
+            <p class="text-xs sm:text-sm text-rose-100/80 leading-relaxed">
+                CarTech shaxsiy kabinetingiz orqali buyurtmalaringizni kuzatib boring, avtomobilingizni garajga biriktiring va mos ehtiyot qismlarni tezkor xarid qiling.
+            </p>
+        </div>
+    </div>
+
+    <!-- 4 STATS CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Stat 1 -->
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 font-semibold">Jami xaridlar</p>
+                <h3 class="text-xl font-black text-white mt-1">{{ total_spent|floatformat:0 }} <span class="text-xs font-bold text-slate-500">so'm</span></h3>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-rose-600/10 text-rose-500 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 font-semibold">Jami buyurtmalar</p>
+                <h3 class="text-xl font-black text-white mt-1">{{ total_orders_count }} ta</h3>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 font-semibold">Jarayondagi buyurtmalar</p>
+                <h3 class="text-xl font-black text-amber-400 mt-1">{{ pending_orders_count }} ta</h3>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-amber-600/10 text-amber-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-truck-ramp-box"></i>
+            </div>
+        </div>
+
+        <!-- Stat 4 -->
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 font-semibold">Mening Garajim</p>
+                <h3 class="text-xl font-black text-emerald-400 mt-1">{{ cars.count }} ta mashina</h3>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-600/10 text-emerald-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-car-side"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- MY GARAGE & RECOMMENDED PARTS -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Garage Widget (Left) -->
+        <div class="lg:col-span-5 bg-slate-950 rounded-3xl border border-slate-800 p-6 space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-warehouse text-rose-500"></i> Mening Avtomobilim
+                </h3>
+                <a href="{% url 'dashboard_garage' %}" class="text-xs text-rose-400 hover:underline font-semibold">
+                    Garajga o'tish &rarr;
+                </a>
+            </div>
+
+            {% if primary_car %}
+                <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 space-y-3 relative overflow-hidden">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Asosiy transport</span>
+                            <h4 class="text-lg font-black text-white mt-0.5">{{ primary_car.car_model.brand.name }} {{ primary_car.car_model.name }}</h4>
+                            {% if primary_car.year %}
+                                <p class="text-xs text-slate-400">Yili: {{ primary_car.year }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-rose-600/20 text-rose-500 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-car"></i>
+                        </div>
+                    </div>
+
+                    {% if primary_car.license_plate %}
+                        <div class="inline-block bg-white text-slate-900 font-mono font-bold text-xs px-3 py-1 rounded-md border border-slate-300">
+                            {{ primary_car.license_plate }}
+                        </div>
+                    {% endif %}
+
+                    {% if primary_car.vin_code %}
+                        <p class="text-[11px] text-slate-500 font-mono">VIN: {{ primary_car.vin_code }}</p>
+                    {% endif %}
+
+                    <div class="pt-2">
+                        <a href="{% url 'product_list' %}?car_model={{ primary_car.car_model.id }}" class="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-screwdriver-wrench"></i> Ushbu modelga mos qismlar
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-8 bg-slate-900/50 rounded-2xl border border-dashed border-slate-800 p-6 space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-slate-900 text-slate-500 flex items-center justify-center text-xl mx-auto">
+                        <i class="fa-solid fa-car"></i>
+                    </div>
+                    <p class="text-xs text-slate-400">Siz hali o'z avtomobilingizni garajga kiritmagansiz.</p>
+                    <a href="{% url 'dashboard_garage' %}" class="inline-block px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition">
+                        + Mashina qo'shish
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Recommended Parts (Right) -->
+        <div class="lg:col-span-7 bg-slate-950 rounded-3xl border border-slate-800 p-6 space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-sparkles text-amber-400"></i> 
+                    {% if primary_car %}
+                        {{ primary_car.car_model.name }} uchun tavsiya etiladigan qismlar
+                    {% else %}
+                        Tavsiya etiladigan ehtiyot qismlar
+                    {% endif %}
+                </h3>
+                <a href="{% url 'product_list' %}" class="text-xs text-rose-400 hover:underline font-semibold">Katalog &rarr;</a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {% for p in recommended_parts %}
+                    <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800/80 flex flex-col justify-between group hover:border-rose-500/40 transition">
+                        <div class="flex gap-3">
+                            <div class="w-14 h-14 rounded-xl bg-slate-950 border border-slate-800 p-1 shrink-0 flex items-center justify-center">
+                                {% if p.image %}
+                                    <img src="{{ p.image.url }}" class="max-h-full max-w-full object-contain">
+                                {% else %}
+                                    <i class="fa-solid fa-gears text-slate-600 text-base"></i>
+                                {% endif %}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <span class="text-[10px] text-rose-400 font-bold uppercase">{{ p.category.name }}</span>
+                                <h4 class="text-xs font-bold text-white truncate mt-0.5 group-hover:text-rose-400 transition">
+                                    <a href="{% url 'product_detail' p.slug %}">{{ p.name }}</a>
+                                </h4>
+                                <p class="text-xs font-extrabold text-white mt-1">{{ p.price|floatformat:0 }} so'm</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between">
+                            <a href="{% url 'product_detail' p.slug %}" class="text-[11px] text-slate-400 hover:text-white">Batafsil</a>
+                            <a href="{% url 'cart_add' p.id %}" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1 transition">
+                                <i class="fa-solid fa-cart-plus text-[10px]"></i> Savatga
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="col-span-full text-xs text-slate-500 py-4 text-center">Tavsiyalar mavjud emas.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RECENT ORDERS TABLE -->
+    <div class="bg-slate-950 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> So'nggi buyurtmalar
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Oxirgi amalga oshirilgan xaridlaringiz</p>
+            </div>
+            <a href="{% url 'dashboard_orders' %}" class="text-xs text-rose-400 hover:underline font-semibold">
+                Barcha buyurtmalar &rarr;
+            </a>
+        </div>
+
+        {% if recent_orders %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-4">Buyurtma ID</th>
+                            <th class="py-3 px-4">Sana</th>
+                            <th class="py-3 px-4">Holati</th>
+                            <th class="py-3 px-4">Summa</th>
+                            <th class="py-3 px-4 text-right">Amal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/80">
+                        {% for order in recent_orders %}
+                            <tr class="hover:bg-slate-900/50 transition">
+                                <td class="py-3.5 px-4 font-mono font-bold text-white">#{{ order.id }}</td>
+                                <td class="py-3.5 px-4 text-slate-400">{{ order.created_at|date:"d M Y, H:i" }}</td>
+                                <td class="py-3.5 px-4">
+                                    {% if order.status == 'delivered' %}
+                                        <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full font-bold">Yetkazildi</span>
+                                    {% elif order.status == 'shipped' %}
+                                        <span class="px-2.5 py-1 bg-sky-500/10 text-sky-400 border border-sky-500/30 rounded-full font-bold">Yetkazilmoqda</span>
+                                    {% elif order.status == 'cancelled' %}
+                                        <span class="px-2.5 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-full font-bold">Bekor qilindi</span>
+                                    {% else %}
+                                        <span class="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full font-bold">Kutilmoqda</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3.5 px-4 font-extrabold text-white">{{ order.total_amount|floatformat:0 }} so'm</td>
+                                <td class="py-3.5 px-4 text-right">
+                                    <a href="{% url 'order_success' order.id %}" class="text-rose-400 hover:text-rose-300 font-semibold">Tafsilot</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8 text-slate-500 text-xs">
+                Sizda hali birorta ham buyurtma mavjud emas.
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

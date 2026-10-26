@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - CarTech{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div class="bg-slate-100 py-4 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center space-x-2 text-xs text-slate-500 overflow-x-auto no-scrollbar whitespace-nowrap">
+            <a href="{% url 'home' %}" class="hover:text-rose-600">Bosh sahifa</a>
+            <span>/</span>
+            <a href="{% url 'product_list' %}" class="hover:text-rose-600">Katalog</a>
+            <span>/</span>
+            <a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="hover:text-rose-600">{{ product.category.name }}</a>
+            <span>/</span>
+            <span class="text-slate-800 font-semibold">{{ product.name|truncatechars:35 }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        <!-- PRODUCT IMAGES -->
+        <div class="lg:col-span-6">
+            <div class="bg-white rounded-3xl border border-slate-200 p-8 flex items-center justify-center relative min-h-[380px] shadow-sm">
+                {% if product.image %}
+                    <img id="main-image" src="{{ product.image.url }}" alt="{{ product.name }}" class="max-h-[350px] max-w-full object-contain transition-all duration-300">
+                {% else %}
+                    <div class="text-slate-300 text-6xl">
+                        <i class="fa-solid fa-gears"></i>
+                    </div>
+                {% endif %}
+
+                {% if product.discount_percent > 0 %}
+                    <span class="absolute top-6 left-6 bg-rose-600 text-white text-xs font-black px-3 py-1.5 rounded-xl shadow-md">
+                        -{{ product.discount_percent }}% CHEGIRMA
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- Gallery Thumbnails if exists -->
+            {% if product.gallery_images.exists %}
+                <div class="flex gap-3 mt-4 overflow-x-auto no-scrollbar pb-2">
+                    <button onclick="document.getElementById('main-image').src='{{ product.image.url }}'" class="w-20 h-20 rounded-2xl bg-white border-2 border-rose-500 p-2 shrink-0 flex items-center justify-center">
+                        <img src="{{ product.image.url }}" class="max-h-full max-w-full object-contain">
+                    </button>
+                    {% for g in product.gallery_images.all %}
+                        <button onclick="document.getElementById('main-image').src='{{ g.image.url }}'" class="w-20 h-20 rounded-2xl bg-white border border-slate-200 hover:border-rose-400 p-2 shrink-0 flex items-center justify-center transition">
+                            <img src="{{ g.image.url }}" class="max-h-full max-w-full object-contain">
+                        </button>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- PRODUCT DETAILS & ACTION -->
+        <div class="lg:col-span-6 space-y-6">
+            <div>
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 bg-rose-50 text-rose-600 rounded-lg text-xs font-bold uppercase tracking-wider">
+                        {{ product.category.name }}
+                    </span>
+                    {% if product.stock > 0 %}
+                        <span class="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span> Omborda bor ({{ product.stock }} dona)
+                        </span>
+                    {% else %}
+                        <span class="flex items-center text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-lg">
+                            Mavjud emas
+                        </span>
+                    {% endif %}
+                </div>
+
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-3 leading-snug">
+                    {{ product.name }}
+                </h1>
+
+                {% if product.sku %}
+                    <p class="text-xs text-slate-400 mt-1">Artikul (SKU): <span class="font-mono font-bold text-slate-700">{{ product.sku }}</span></p>
+                {% endif %}
+            </div>
+
+            <!-- Price Card -->
+            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Xarid narxi:</p>
+                    <div class="text-3xl font-black text-slate-900 mt-0.5">
+                        {{ product.price|floatformat:0 }} <span class="text-sm font-bold text-slate-500">so'm</span>
+                    </div>
+                    {% if product.old_price %}
+                        <div class="text-sm text-slate-400 line-through mt-0.5">
+                            {{ product.old_price|floatformat:0 }} so'm
+                        </div>
+                    {% endif %}
+                </div>
+                {% if product.warranty %}
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400">Rasmiy kafolat:</span>
+                        <p class="text-sm font-bold text-rose-600 flex items-center justify-end gap-1">
+                            <i class="fa-solid fa-shield-check"></i> {{ product.warranty }}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Add to Cart Form -->
+            <form action="{% url 'cart_add' product.id %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div class="flex items-center gap-4">
+                    <!-- Quantity Stepper -->
+                    <div class="flex items-center border border-slate-300 rounded-2xl bg-white overflow-hidden p-1 shadow-sm">
+                        <button type="button" onclick="let q = document.getElementById('qty'); if(q.value > 1) q.value--;" class="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-xl transition">
+                            <i class="fa-solid fa-minus text-xs"></i>
+                        </button>
+                        <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-14 text-center font-bold text-slate-800 text-sm focus:outline-none">
+                        <button type="button" onclick="let q = document.getElementById('qty'); q.value++;" class="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-xl transition">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="flex-1 py-4 px-6 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-xl shadow-rose-600/25 flex items-center justify-center gap-2 transition duration-200">
+                        <i class="fa-solid fa-cart-shopping"></i> Savatga qo'shish
+                    </button>
+                </div>
+            </form>
+
+            <!-- Specifications Table -->
+            <div class="border-t border-slate-200 pt-6 space-y-3">
+                <h4 class="font-bold text-slate-900 text-sm uppercase tracking-wider">Xususiyatlari:</h4>
+                <div class="grid grid-cols-2 gap-y-2 text-xs">
+                    <span class="text-slate-400">Ishlab chiqaruvchi:</span>
+                    <span class="font-semibold text-slate-800">{{ product.manufacturer|default:"Original / OEM" }}</span>
+
+                    <span class="text-slate-400">Ishlab chiqarilgan davlat:</span>
+                    <span class="font-semibold text-slate-800">{{ product.country|default:"Janubiy Koreya / O'zbekiston" }}</span>
+
+                    <span class="text-slate-400">Holati:</span>
+                    <span class="font-semibold text-slate-800">Yangi, zavod qadog'ida</span>
+                </div>
+            </div>
+
+            <!-- Compatible Cars Badges -->
+            {% if product.compatible_models.exists %}
+                <div class="border-t border-slate-200 pt-6">
+                    <h4 class="font-bold text-slate-900 text-sm uppercase tracking-wider mb-3">Mos keladigan avtomobillar:</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% for model in product.compatible_models.all %}
+                            <span class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-slate-200">
+                                <i class="fa-solid fa-car-side text-rose-500"></i> {{ model.brand.name }} {{ model.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- TABS: DESCRIPTION & REVIEWS -->
+    <div class="mt-16 bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+        <h3 class="text-xl font-extrabold text-slate-900 mb-4 pb-4 border-b border-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-rose-600"></i> Mahsulot haqida to'liq ma'lumot
+        </h3>
+        
+        <div class="prose max-w-none text-slate-600 text-sm leading-relaxed mb-8">
+            {% if product.description %}
+                {{ product.description|linebreaks }}
+            {% else %}
+                <p>Ushbu ehtiyot qism avtomobilingiz zavod talablariga to'liq javob beradi. Yuqori sifatli materiallardan tayyorlangan bo'lib, uzoq muddatli xizmat ko'rsatishga mo'ljallangan.</p>
+            {% endif %}
+        </div>
+
+        <!-- REVIEWS SECTION -->
+        <div class="pt-8 border-t border-slate-100">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900">Mijozlar sharhlari ({{ reviews.count }})</h3>
+                    <p class="text-xs text-slate-400">Ushbu mahsulot haqida xaridorlarimiz nima deydi?</p>
+                </div>
+            </div>
+
+            <!-- Review list -->
+            <div class="space-y-4 mb-8">
+                {% for r in reviews %}
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-sm text-slate-800">{{ r.user.first_name|default:r.user.username }}</span>
+                            <div class="text-amber-400 text-xs">
+                                {% for i in "12345" %}
+                                    <i class="fa-solid fa-star"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2">{{ r.comment }}</p>
+                        <span class="text-[10px] text-slate-400 mt-1 block">{{ r.created_at|date:"d M Y, H:i" }}</span>
+                    </div>
+                {% empty %}
+                    <p class="text-xs text-slate-400 py-4 text-center">Hozircha hech kim sharh qoldirmagan. Birinchi bo'lib fikringizni yozing!</p>
+                {% endfor %}
+            </div>
+
+            <!-- Leave a Review Form -->
+            {% if user.is_authenticated %}
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200">
+                    <h4 class="font-bold text-sm text-slate-900 mb-3">O'z sharhingizni qoldiring:</h4>
+                    <form action="{% url 'product_detail' product.slug %}" method="POST" class="space-y-3">
+                        {% csrf_token %}
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Baholang:</label>
+                            <select name="rating" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-700">
+                                <option value="5">5 ★★★★★ (A'lo)</option>
+                                <option value="4">4 ★★★★☆ (Yaxshi)</option>
+                                <option value="3">3 ★★★☆☆ (O'rtacha)</option>
+                                <option value="2">2 ★★☆☆☆ (Qoniqarsiz)</option>
+                                <option value="1">1 ★☆☆☆☆ (Yomon)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <textarea name="comment" rows="3" required placeholder="Mahsulot haqidagi tajribangizni yozing..." class="w-full bg-white border border-slate-300 rounded-xl p-3 text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-rose-600 text-white font-semibold text-xs rounded-xl transition">
+                            Sharhni yuborish
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="p-4 rounded-xl bg-slate-50 text-center text-xs text-slate-500">
+                    Sharh qoldirish uchun <a href="{% url 'login' %}?next={{ request.path }}" class="text-rose-600 font-bold hover:underline">tizimga kiring</a>.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    {% if related_products %}
+        <div class="mt-16">
+            <h3 class="text-2xl font-extrabold text-slate-900 mb-8">O'xshash ehtiyot qismlar</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for p in related_products %}
+                    <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-xl transition flex flex-col group">
+                        <div class="h-44 bg-slate-50 flex items-center justify-center p-4 relative">
+                            {% if p.image %}
+                                <img src="{{ p.image.url }}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition">
+                            {% else %}
+                                <i class="fa-solid fa-gear text-slate-300 text-2xl"></i>
+                            {% endif %}
+                            <a href="{% url 'product_detail' p.slug %}" class="absolute inset-0"></a>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <h4 class="font-bold text-xs text-slate-800 line-clamp-2">
+                                <a href="{% url 'product_detail' p.slug %}">{{ p.name }}</a>
+                            </h4>
+                            <div class="mt-3 flex items-center justify-between pt-2 border-t border-slate-100">
+                                <span class="font-bold text-sm text-slate-900">{{ p.price|floatformat:0 }} so'm</span>
+                                <a href="{% url 'cart_add' p.id %}" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-rose-600 hover:text-white flex items-center justify-center text-xs transition">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

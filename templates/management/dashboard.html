@@ -1,0 +1,201 @@
+{% extends 'management/base_management.html' %}
+
+{% block title %}Boshqaruv Paneli | CarTech Admin{% endblock %}
+{% block header_title %}Do'kon Asosiy Ko'rsatkichlari{% endblock %}
+
+{% block management_content %}
+<div class="space-y-8 max-w-7xl mx-auto">
+    
+    <!-- STATS CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Revenue Card -->
+        <div class="bg-slate-950 p-6 rounded-3xl border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 font-semibold">Yetkazilgan Tushum</p>
+                <h3 class="text-2xl font-black text-white mt-1">{{ total_revenue|floatformat:0 }} <span class="text-xs font-bold text-slate-500">so'm</span></h3>
+                <p class="text-[11px] text-emerald-400 mt-1"><i class="fa-solid fa-arrow-trend-up"></i> Muvaffaqiyatli buyurtmalar</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+        </div>
+
+        <!-- Orders Card -->
+        <div class="bg-slate-950 p-6 rounded-3xl border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 font-semibold">Yangi Buyurtmalar</p>
+                <h3 class="text-2xl font-black text-amber-400 mt-1">{{ pending_orders_count }} ta</h3>
+                <p class="text-[11px] text-slate-400 mt-1">Jami: {{ total_orders_count }} ta buyurtma</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-truck-fast"></i>
+            </div>
+        </div>
+
+        <!-- Products Card -->
+        <div class="bg-slate-950 p-6 rounded-3xl border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 font-semibold">Ombordagi Mahsulotlar</p>
+                <h3 class="text-2xl font-black text-white mt-1">{{ total_products_count }} ta</h3>
+                <p class="text-[11px] text-rose-400 mt-1">{% if low_stock_products %}{{ low_stock_products.count }} ta kam qolgan{% else %}Zaxira yetarli{% endif %}</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+        </div>
+
+        <!-- Customers Card -->
+        <div class="bg-slate-950 p-6 rounded-3xl border border-slate-800 flex items-center justify-between">
+            <div>
+                <p class="text-xs text-slate-400 font-semibold">Mijozlar Soni</p>
+                <h3 class="text-2xl font-black text-sky-400 mt-1">{{ total_customers_count }} ta</h3>
+                <p class="text-[11px] text-slate-400 mt-1">Ro'yxatdan o'tgan haydovchilar</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-users"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOW STOCK ALERT & QUICK ACTIONS -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Low Stock Alert (Left) -->
+        <div class="lg:col-span-7 bg-slate-950 rounded-3xl border border-slate-800 p-6 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Tugab qolayotgan ehtiyot qismlar (<= 5 dona)
+                </h3>
+                <a href="{% url 'mgmt_products' %}?stock=low" class="text-xs text-rose-400 hover:underline">Barchasi &rarr;</a>
+            </div>
+
+            {% if low_stock_products %}
+                <div class="space-y-3">
+                    {% for p in low_stock_products %}
+                        <div class="bg-slate-900 rounded-2xl p-3.5 border border-slate-800 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 p-1 shrink-0 flex items-center justify-center">
+                                    {% if p.image %}
+                                        <img src="{{ p.image.url }}" class="max-h-full max-w-full object-contain">
+                                    {% else %}
+                                        <i class="fa-solid fa-gear text-slate-600"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="text-xs font-bold text-white truncate">{{ p.name }}</h4>
+                                    <p class="text-[11px] text-slate-400">Artikul: <span class="font-mono text-slate-300">{{ p.sku|default:"-" }}</span></p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 text-xs font-black">
+                                    {{ p.stock }} dona qoldi
+                                </span>
+                                <a href="{% url 'mgmt_product_edit' p.id %}" class="p-2 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white transition" title="Tahrirlash">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="py-8 text-center text-xs text-emerald-400 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i> Barcha tovarlar zaxirasi yetarli darajada!
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Quick Store Actions (Right) -->
+        <div class="lg:col-span-5 bg-slate-950 rounded-3xl border border-slate-800 p-6 space-y-4">
+            <h3 class="font-bold text-white text-sm pb-3 border-b border-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-rose-500"></i> Tezkor Amallar
+            </h3>
+
+            <div class="grid grid-cols-1 gap-3">
+                <a href="{% url 'mgmt_product_add' %}" class="p-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-between transition shadow-lg shadow-rose-600/20">
+                    <span class="flex items-center gap-3">
+                        <i class="fa-solid fa-circle-plus text-base"></i> Yangi mahsulot kiritish
+                    </span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+                <a href="{% url 'mgmt_orders' %}?status=pending" class="p-4 rounded-2xl bg-slate-900 hover:bg-slate-850 border border-slate-800 text-white font-bold text-xs flex items-center justify-between transition">
+                    <span class="flex items-center gap-3">
+                        <i class="fa-solid fa-box text-amber-400 text-base"></i> Kutilayotgan buyurtmalarni tekshirish
+                    </span>
+                    <span class="bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full text-[10px]">{{ pending_orders_count }}</span>
+                </a>
+
+                <a href="{% url 'mgmt_categories' %}" class="p-4 rounded-2xl bg-slate-900 hover:bg-slate-850 border border-slate-800 text-white font-bold text-xs flex items-center justify-between transition">
+                    <span class="flex items-center gap-3">
+                        <i class="fa-solid fa-layer-group text-sky-400 text-base"></i> Toifalarni boshqarish
+                    </span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RECENT ORDERS TABLE -->
+    <div class="bg-slate-950 rounded-3xl border border-slate-800 p-6 space-y-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-truck-ramp-box text-rose-500"></i> So'nggi buyurtmalar
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Mijozlardan yangi kelgan buyurtmalar</p>
+            </div>
+            <a href="{% url 'mgmt_orders' %}" class="text-xs text-rose-400 hover:underline font-semibold">Barcha buyurtmalar &rarr;</a>
+        </div>
+
+        {% if recent_orders %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-4">ID</th>
+                            <th class="py-3 px-4">Mijoz</th>
+                            <th class="py-3 px-4">Telefon</th>
+                            <th class="py-3 px-4">Shahar / Manzil</th>
+                            <th class="py-3 px-4">Holati</th>
+                            <th class="py-3 px-4">Summa</th>
+                            <th class="py-3 px-4 text-right">Boshqarish</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/80">
+                        {% for order in recent_orders %}
+                            <tr class="hover:bg-slate-900/50 transition">
+                                <td class="py-3.5 px-4 font-mono font-bold text-white">#{{ order.id }}</td>
+                                <td class="py-3.5 px-4 font-semibold text-slate-200">{{ order.full_name }}</td>
+                                <td class="py-3.5 px-4 text-slate-300 font-mono">{{ order.phone }}</td>
+                                <td class="py-3.5 px-4 text-slate-400 truncate max-w-xs">{{ order.city }}, {{ order.address }}</td>
+                                <td class="py-3.5 px-4">
+                                    {% if order.status == 'delivered' %}
+                                        <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full font-bold">Yetkazildi</span>
+                                    {% elif order.status == 'shipped' %}
+                                        <span class="px-2.5 py-1 bg-sky-500/10 text-sky-400 border border-sky-500/30 rounded-full font-bold">Yetkazilmoqda</span>
+                                    {% elif order.status == 'cancelled' %}
+                                        <span class="px-2.5 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-full font-bold">Bekor qilindi</span>
+                                    {% else %}
+                                        <span class="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full font-bold">Kutilmoqda</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3.5 px-4 font-extrabold text-white">{{ order.total_amount|floatformat:0 }} so'm</td>
+                                <td class="py-3.5 px-4 text-right">
+                                    <a href="{% url 'mgmt_order_detail' order.id %}" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition">
+                                        Ko'rish
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8 text-slate-500 text-xs">Hozircha buyurtmalar yo'q.</div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Ro'yxatdan o'tish - CarTech{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-xl shadow-slate-200/50 space-y-6">
+        
+        <div class="text-center">
+            <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-4">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Ro'yxatdan o'tish</h2>
+            <p class="text-xs text-slate-400 mt-1">CarTech tizimida yangi hisob yarating</p>
+        </div>
+
+        <form action="{% url 'register' %}" method="POST" class="space-y-4">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Ism *</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.first_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Familiya *</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.last_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Foydalanuvchi nomi (Username) *</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Telefon raqam *</label>
+                {{ form.phone_number }}
+                {% if form.phone_number.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.phone_number.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Elektron pochta (Email) *</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Parol *</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Parolni tasdiqlang *</label>
+                {{ form.password_confirm }}
+                {% if form.password_confirm.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.password_confirm.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-lg shadow-rose-600/30 transition duration-200 mt-2">
+                Ro'yxatdan o'tish
+            </button>
+        </form>
+
+        <div class="pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+            Hisobingiz bormi? 
+            <a href="{% url 'login' %}" class="text-rose-600 font-bold hover:underline">Tizimga kiring</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

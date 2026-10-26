@@ -1,0 +1,131 @@
+{% extends 'accounts/dashboard/base_dashboard.html' %}
+
+{% block title %}Mening Garajim | CarTech Dashboard{% endblock %}
+{% block header_title %}Mening Garajim{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-8 max-w-7xl mx-auto">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Cars List (Left) -->
+        <div class="lg:col-span-7 space-y-4">
+            <div class="flex items-center justify-between pb-2">
+                <div>
+                    <h3 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fa-solid fa-car-rear text-rose-500"></i> Mening Avtomobillarim ({{ cars.count }})
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Avtomobilingizni biriktiring va unga mos ehtiyot qismlarni bir zumda toping</p>
+                </div>
+            </div>
+
+            {% for car in cars %}
+                <div class="bg-slate-950 rounded-3xl border {% if car.is_primary %} border-rose-500/50 shadow-lg shadow-rose-950/20 {% else %} border-slate-800 {% endif %} p-6 relative overflow-hidden group">
+                    <div class="flex items-start justify-between">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">{{ car.car_model.brand.name }}</span>
+                                {% if car.is_primary %}
+                                    <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded-full text-[10px] font-bold">
+                                        Asosiy
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <h4 class="text-xl font-black text-white">{{ car.car_model.name }}</h4>
+                            {% if car.year %}
+                                <p class="text-xs text-slate-400">Ishlab chiqarilgan yili: <strong class="text-slate-200">{{ car.year }}</strong></p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Car icon -->
+                        <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 text-rose-500 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-car-side"></i>
+                        </div>
+                    </div>
+
+                    <!-- Details: Plate and VIN -->
+                    <div class="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-3">
+                        {% if car.license_plate %}
+                            <div class="bg-white text-slate-900 font-mono font-black text-xs px-3 py-1 rounded-md border border-slate-300 shadow-sm flex items-center gap-1.5">
+                                <span class="text-[10px] text-slate-500">UZ</span> {{ car.license_plate }}
+                            </div>
+                        {% endif %}
+
+                        {% if car.vin_code %}
+                            <div class="text-[11px] text-slate-400 font-mono bg-slate-900 px-3 py-1 rounded-md border border-slate-800">
+                                VIN: <span class="text-slate-200">{{ car.vin_code }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                        <a href="{% url 'product_list' %}?car_model={{ car.car_model.id }}" class="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-rose-600/20">
+                            <i class="fa-solid fa-screwdriver-wrench"></i> Ushbu mashinaga ehtiyot qismlar
+                        </a>
+                        <a href="{% url 'dashboard_garage_delete' car.id %}" onclick="return confirm('Ushbu mashinani garajdan o\'chirishni xohlaysizmi?');" class="p-2.5 rounded-xl bg-slate-900 hover:bg-red-500/20 text-slate-500 hover:text-red-400 border border-slate-800 transition" title="O'chirish">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-16 bg-slate-950 rounded-3xl border border-slate-800 p-8 space-y-3">
+                    <div class="w-16 h-16 rounded-2xl bg-slate-900 text-slate-500 flex items-center justify-center text-3xl mx-auto">
+                        <i class="fa-solid fa-warehouse"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white">Garajingiz hozircha bo'sh</h3>
+                    <p class="text-xs text-slate-400">O'ng tarafdagi forma orqali o'z avtomobilingizni qo'shing.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Add Car Form (Right) -->
+        <div class="lg:col-span-5 bg-slate-950 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
+            <div>
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-rose-500"></i> Yangi avtomobil qo'shish
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Mashina parametrlarini kiriting</p>
+            </div>
+
+            <form action="{% url 'dashboard_garage' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Avtomobil modeli *</label>
+                    {{ form.car_model }}
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Yili</label>
+                        {{ form.year }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Davlat raqami</label>
+                        {{ form.license_plate }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">VIN-kod / Kuzov raqami</label>
+                    {{ form.vin_code }}
+                </div>
+
+                <div class="flex items-center gap-2 pt-2">
+                    {{ form.is_primary }}
+                    <label for="{{ form.is_primary.id_for_label }}" class="text-xs text-slate-300 font-semibold cursor-pointer">
+                        Asosiy avtomobil sifatida belgilash
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition duration-200 mt-4">
+                    Garajga saqlash
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

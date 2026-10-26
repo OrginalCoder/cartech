@@ -1,0 +1,167 @@
+{% extends 'management/base_management.html' %}
+
+{% block title %}{{ title }} | CarTech Admin{% endblock %}
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block management_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    
+    <div class="bg-slate-950 rounded-3xl border border-slate-800 p-6 sm:p-10 space-y-8">
+        <div class="flex items-center justify-between pb-6 border-b border-slate-800">
+            <div>
+                <h3 class="font-extrabold text-white text-lg">{{ title }}</h3>
+                <p class="text-xs text-slate-400 mt-1">Avtomobil ehtiyot qismining barcha ma'lumotlarini to'ldiring</p>
+            </div>
+            <a href="{% url 'mgmt_products' %}" class="px-4 py-2 bg-slate-900 hover:bg-slate-850 text-slate-300 text-xs font-semibold rounded-xl border border-slate-800">
+                &larr; Mahsulotlar ro'yxatiga qaytish
+            </a>
+        </div>
+
+        <form action="" method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-xl">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- 1. Asosiy ma'lumotlar -->
+            <div class="space-y-4">
+                <h4 class="text-xs font-bold text-rose-500 uppercase tracking-wider">1. Asosiy ma'lumotlar</h4>
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Mahsulot nomi *</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}<p class="text-xs text-red-400 mt-1">{{ form.name.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Toifa (Kategoriya) *</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}<p class="text-xs text-red-400 mt-1">{{ form.category.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Artikul (SKU / Kod)</label>
+                        {{ form.sku }}
+                        {% if form.sku.errors %}<p class="text-xs text-red-400 mt-1">{{ form.sku.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Narx va Zaxira -->
+            <div class="pt-6 border-t border-slate-800/80 space-y-4">
+                <h4 class="text-xs font-bold text-rose-500 uppercase tracking-wider">2. Narx va Ombor</h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Sotish narxi (so'm) *</label>
+                        {{ form.price }}
+                        {% if form.price.errors %}<p class="text-xs text-red-400 mt-1">{{ form.price.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Eski narx (chegirma bo'lsa)</label>
+                        {{ form.old_price }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Ombordagi soni *</label>
+                        {{ form.stock }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Mos keladigan avtomobillar -->
+            <div class="pt-6 border-t border-slate-800/80 space-y-4">
+                <h4 class="text-xs font-bold text-rose-500 uppercase tracking-wider">3. Mos keladigan avtomobillar</h4>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Modellarni tanlang (Ctrl tugmasini bosib bir nechta tanlash mumkin):</label>
+                    {{ form.compatible_models }}
+                    <p class="text-[11px] text-slate-500 mt-1">Ushbu ehtiyot qism qaysi mashinalarga to'g'ri kelishini belgilang.</p>
+                </div>
+            </div>
+
+            <!-- 4. Texnik xususiyatlar -->
+            <div class="pt-6 border-t border-slate-800/80 space-y-4">
+                <h4 class="text-xs font-bold text-rose-500 uppercase tracking-wider">4. Ishlab chiqaruvchi va Kafolat</h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Ishlab chiqaruvchi brend</label>
+                        {{ form.manufacturer }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Ishlab chiqarilgan davlat</label>
+                        {{ form.country }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Kafolat muddati</label>
+                        {{ form.warranty }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Qisqa tavsif</label>
+                    {{ form.short_description }}
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Batafsil tavsif</label>
+                    {{ form.description }}
+                </div>
+            </div>
+
+            <!-- 5. Rasm yuklash -->
+            <div class="pt-6 border-t border-slate-800/80 space-y-4">
+                <h4 class="text-xs font-bold text-rose-500 uppercase tracking-wider">5. Mahsulot rasmi</h4>
+                
+                {% if product and product.image %}
+                    <div class="flex items-center gap-4 p-3 bg-slate-900 rounded-2xl border border-slate-800 w-fit">
+                        <img src="{{ product.image.url }}" class="w-16 h-16 object-contain rounded-xl bg-slate-950 p-1">
+                        <div>
+                            <p class="text-xs text-slate-300 font-semibold">Joriy rasm yuklangan</p>
+                            <span class="text-[10px] text-slate-500">O'zgartirish uchun yangi fayl tanlang</span>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div>
+                    {{ form.image }}
+                </div>
+            </div>
+
+            <!-- 6. Holat belgilari -->
+            <div class="pt-6 border-t border-slate-800/80 space-y-4">
+                <h4 class="text-xs font-bold text-rose-500 uppercase tracking-wider">6. Ko'rsatish sozlamalari</h4>
+
+                <div class="flex flex-wrap gap-6">
+                    <label class="flex items-center gap-2.5 text-xs text-slate-300 font-semibold cursor-pointer">
+                        {{ form.is_available }}
+                        <span>Sotuvda mavjud (Saytda ko'rinsin)</span>
+                    </label>
+
+                    <label class="flex items-center gap-2.5 text-xs text-slate-300 font-semibold cursor-pointer">
+                        {{ form.is_featured }}
+                        <span>Bosh sahifada tavsiya etilsin</span>
+                    </label>
+
+                    <label class="flex items-center gap-2.5 text-xs text-slate-300 font-semibold cursor-pointer">
+                        {{ form.is_new }}
+                        <span>Yangi mahsulot nishoni</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-slate-800 flex items-center justify-end gap-3">
+                <a href="{% url 'mgmt_products' %}" class="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-bold transition">
+                    Bekor qilish
+                </a>
+                <button type="submit" class="px-8 py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xl shadow-rose-600/30 transition">
+                    Mahsulotni saqlash
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

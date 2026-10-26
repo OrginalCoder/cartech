@@ -1,0 +1,85 @@
+{% extends 'management/base_management.html' %}
+
+{% block title %}Mijozlar | CarTech Admin{% endblock %}
+{% block header_title %}Ro'yxatdan o'tgan mijozlar ({{ customers.count }}){% endblock %}
+
+{% block management_content %}
+<div class="space-y-6 max-w-7xl mx-auto">
+    
+    <div class="bg-slate-950 rounded-3xl border border-slate-800 overflow-hidden">
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-white text-base">Foydalanuvchilar va Xaridorlar</h3>
+                <p class="text-xs text-slate-400 mt-0.5">CarTech platformasida ro'yxatdan o'tgan mijozlar bazasi</p>
+            </div>
+            <span class="text-xs font-bold text-sky-400 bg-sky-500/10 border border-sky-500/30 px-3 py-1 rounded-full">
+                Jami: {{ customers.count }} ta mijoz
+            </span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="text-slate-400 uppercase tracking-wider bg-slate-900/50 border-b border-slate-800">
+                    <tr>
+                        <th class="py-4 px-6">Mijoz</th>
+                        <th class="py-4 px-4">Telefon raqam</th>
+                        <th class="py-4 px-4">Email</th>
+                        <th class="py-4 px-4">Shahar / Manzil</th>
+                        <th class="py-4 px-4">Buyurtmalar</th>
+                        <th class="py-4 px-4">Jami xarid</th>
+                        <th class="py-4 px-6 text-right">A'zo bo'lgan sana</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/80">
+                    {% for c in customers %}
+                        <tr class="hover:bg-slate-900/40 transition">
+                            <td class="py-3.5 px-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 font-bold text-white flex items-center justify-center text-xs">
+                                        {{ c.username|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white">{{ c.first_name }} {{ c.last_name }}</h4>
+                                        <span class="text-[10px] text-slate-400">@{{ c.username }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 font-mono font-bold text-slate-300">
+                                {% if c.phone_number %}
+                                    <a href="tel:{{ c.phone_number }}" class="hover:text-rose-400">{{ c.phone_number }}</a>
+                                {% else %}
+                                    <span class="text-slate-600">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-400">{{ c.email|default:"-" }}</td>
+                            <td class="py-3.5 px-4 text-slate-400">
+                                {% if c.profile and c.profile.city %}
+                                    {{ c.profile.city }}
+                                {% else %}
+                                    <span class="text-slate-600">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3.5 px-4 font-bold text-white">
+                                {{ c.orders_count }} ta
+                            </td>
+                            <td class="py-3.5 px-4 font-extrabold text-emerald-400 whitespace-nowrap">
+                                {{ c.total_spent|default:0|floatformat:0 }} so'm
+                            </td>
+                            <td class="py-3.5 px-6 text-right text-slate-500 whitespace-nowrap">
+                                {{ c.date_joined|date:"d.m.Y" }}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="py-12 text-center text-slate-500 text-xs">
+                                Hozircha mijozlar ro'yxatdan o'tmagan.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

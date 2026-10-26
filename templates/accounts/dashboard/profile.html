@@ -1,0 +1,65 @@
+{% extends 'accounts/dashboard/base_dashboard.html' %}
+
+{% block title %}Profil Sozlamalari | CarTech Dashboard{% endblock %}
+{% block header_title %}Profil va Yetkazish Manzili{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    
+    <div class="bg-slate-950 rounded-3xl border border-slate-800 p-6 sm:p-10 space-y-8">
+        <div>
+            <h3 class="font-bold text-white text-lg flex items-center gap-2">
+                <i class="fa-solid fa-user-pen text-rose-500"></i> Shaxsiy ma'lumotlarni tahrirlash
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Ushbu ma'lumotlar buyurtma berganda avtomatik qo'llaniladi</p>
+        </div>
+
+        <form action="{% url 'dashboard_profile' %}" method="POST" class="space-y-6">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Ism *</label>
+                    {{ form.first_name }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Familiya *</label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Telefon raqam *</label>
+                    {{ form.phone_number }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Elektron pochta (Email) *</label>
+                    {{ form.email }}
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-slate-800/80 space-y-4">
+                <h4 class="font-bold text-sm text-white">Doimiy yetkazib berish manzili</h4>
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Shahar / Viloyat</label>
+                    {{ form.city }}
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">To'liq manzil (ko'cha, uy raqami, xonadon)</label>
+                    {{ form.shipping_address }}
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" class="py-3.5 px-8 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition duration-200">
+                    O'zgarishlarni saqlash
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

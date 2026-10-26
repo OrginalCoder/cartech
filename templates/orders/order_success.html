@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Buyurtma qabul qilindi - CarTech{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center shadow-sm">
+        
+        <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-6 shadow-inner">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest">Muvaffaqiyatli</span>
+        <h1 class="text-3xl font-extrabold text-slate-900 mt-1">Buyurtmangiz uchun rahmat!</h1>
+        <p class="text-slate-500 text-sm mt-2 max-w-md mx-auto">
+            Sizning buyurtmangiz muvaffaqiyatli qabul qilindi. Tez orada operatorimiz siz bilan bog'lanib, yetkazib berish vaqtini tasdiqlaydi.
+        </p>
+
+        <!-- Order Summary Card -->
+        <div class="mt-8 p-6 rounded-2xl bg-slate-50 border border-slate-200/80 text-left space-y-4 text-xs sm:text-sm">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-200">
+                <span class="text-slate-500">Buyurtma raqami:</span>
+                <span class="font-extrabold text-slate-900 font-mono text-base">#{{ order.id }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-slate-500">Qabul qiluvchi:</span>
+                <span class="font-bold text-slate-800">{{ order.full_name }} ({{ order.phone }})</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-slate-500">Yetkazish manzili:</span>
+                <span class="font-bold text-slate-800">{{ order.city }}, {{ order.address }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-slate-500">To'lov turi:</span>
+                <span class="font-bold text-slate-800">{{ order.get_payment_method_display }}</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-slate-200 text-base">
+                <span class="font-extrabold text-slate-900">Jami summa:</span>
+                <span class="font-black text-rose-600 text-lg">{{ order.total_amount|floatformat:0 }} so'm</span>
+            </div>
+        </div>
+
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{% url 'home' %}" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition">
+                <i class="fa-solid fa-house mr-1.5"></i> Bosh sahifaga qaytish
+            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'my_orders' %}" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs transition border border-rose-200">
+                    <i class="fa-solid fa-box mr-1.5"></i> Mening buyurtmalarim
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

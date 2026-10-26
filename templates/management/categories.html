@@ -1,0 +1,98 @@
+{% extends 'management/base_management.html' %}
+
+{% block title %}Toifalar Boshqaruvi | CarTech Admin{% endblock %}
+{% block header_title %}Mahsulot Toifalari (Kategoriyalar){% endblock %}
+
+{% block management_content %}
+<div class="space-y-8 max-w-7xl mx-auto">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Categories List (7 cols) -->
+        <div class="lg:col-span-7 bg-slate-950 rounded-3xl border border-slate-800 p-6 space-y-4">
+            <h3 class="font-extrabold text-white text-base pb-3 border-b border-slate-800 flex items-center justify-between">
+                <span>Mavjud toifalar</span>
+                <span class="text-xs font-normal text-slate-400">{{ categories.count }} ta toifa</span>
+            </h3>
+
+            <div class="space-y-3">
+                {% for cat in categories %}
+                    <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 text-rose-500 flex items-center justify-center text-lg shrink-0">
+                                <i class="fa-solid {{ cat.icon|default:'fa-wrench' }}"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-white text-xs truncate">{{ cat.name }}</h4>
+                                <span class="text-[10px] text-slate-400">{{ cat.product_count }} ta ehtiyot qism</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            {% if cat.is_featured %}
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                                    Bosh sahifada
+                                </span>
+                            {% else %}
+                                <span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px]">
+                                    Oddiy
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-xs text-slate-500 py-6 text-center">Toifalar mavjud emas.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Add Category Form (5 cols) -->
+        <div class="lg:col-span-5 bg-slate-950 rounded-3xl border border-slate-800 p-6 sm:p-8 space-y-6">
+            <div>
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-rose-500"></i> Yangi toifa qo'shish
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Yangi mahsulot guruhi yaratish</p>
+            </div>
+
+            <form action="" method="POST" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Toifa nomi *</label>
+                    {{ form.name }}
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">FontAwesome Ikon klassi</label>
+                    {{ form.icon }}
+                    <span class="text-[10px] text-slate-500 mt-1 block">Masalan: fa-oil-can, fa-cog, fa-car-battery</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Tavsif</label>
+                    {{ form.description }}
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Rasm (ixtiyoriy)</label>
+                    {{ form.image }}
+                </div>
+
+                <div class="flex items-center gap-2 pt-2">
+                    {{ form.is_featured }}
+                    <label for="{{ form.is_featured.id_for_label }}" class="text-xs text-slate-300 font-semibold cursor-pointer">
+                        Bosh sahifada ko'rsatilsin
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition duration-200 mt-4">
+                    Toifani saqlash
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

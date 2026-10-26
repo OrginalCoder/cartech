@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Shaxsiy Profil - CarTech{% endblock %}
+
+{% block content %}
+<div class="bg-slate-100 py-6 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Shaxsiy kabinet</h1>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">Shaxsiy ma'lumotlaringiz va yetkazib berish manzillarini boshqaring</p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- User Sidebar -->
+        <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+            <div class="text-center pb-6 border-b border-slate-100">
+                <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-rose-600 to-red-500 text-white text-3xl font-extrabold flex items-center justify-center mx-auto mb-3 shadow-lg shadow-rose-600/25">
+                    {{ user.first_name|default:user.username|slice:":1"|upper }}
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">{{ user.first_name }} {{ user.last_name }}</h3>
+                <p class="text-xs text-slate-400">@{{ user.username }}</p>
+            </div>
+
+            <div class="space-y-3 text-xs sm:text-sm">
+                <div class="flex items-center text-slate-600 gap-3">
+                    <i class="fa-solid fa-phone text-rose-500 w-5"></i>
+                    <span>{{ user.phone_number|default:"Kiritilmagan" }}</span>
+                </div>
+                <div class="flex items-center text-slate-600 gap-3">
+                    <i class="fa-solid fa-envelope text-rose-500 w-5"></i>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div class="flex items-center text-slate-600 gap-3">
+                    <i class="fa-solid fa-location-dot text-rose-500 w-5"></i>
+                    <span>{{ profile.city|default:"Shahar kiritilmagan" }}</span>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 space-y-2">
+                <a href="{% url 'my_orders' %}" class="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-rose-50 hover:text-rose-600 text-slate-700 font-semibold text-xs flex items-center justify-between transition">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-box text-slate-400"></i> Mening buyurtmalarim</span>
+                    <span class="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ orders.count }}</span>
+                </a>
+                <a href="{% url 'logout' %}" class="w-full py-2.5 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-xs flex items-center gap-2 transition">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Tizimdan chiqish
+                </a>
+            </div>
+        </div>
+
+        <!-- Profile Edit Form -->
+        <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-user-pen text-rose-600"></i> Profil ma'lumotlarini tahrirlash
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Ma'lumotlaringiz xarid paytida avtomatik to'ldiriladi</p>
+            </div>
+
+            <form action="{% url 'profile' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Ism</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Familiya</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Telefon raqam</label>
+                        {{ form.phone_number }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email</label>
+                        {{ form.email }}
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 space-y-4">
+                    <h4 class="font-bold text-sm text-slate-900">Doimiy yetkazib berish manzili</h4>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Shahar / Tuman</label>
+                        {{ form.city }}
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">To'liq manzil</label>
+                        {{ form.shipping_address }}
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="py-3 px-6 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition duration-200">
+                        O'zgarishlarni saqlash
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

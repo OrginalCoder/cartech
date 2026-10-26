@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Buyurtmani rasmiylashtirish - CarTech{% endblock %}
+
+{% block content %}
+<div class="bg-slate-100 py-6 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Buyurtmani rasmiylashtirish</h1>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">Yetkazib berish ma'lumotlarini kiriting va buyurtmani tasdiqlang</p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <form action="{% url 'checkout' %}" method="POST">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left: Delivery & Contact Form -->
+            <div class="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-user-tag text-rose-600"></i> 1. Qabul qiluvchi ma'lumotlari
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Kuryerimiz siz bilan bog'lanishi uchun aniq ma'lumotlarni yozing</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">F.I.SH *</label>
+                        <input type="text" name="full_name" required value="{{ initial.full_name|default:'' }}" placeholder="Ism va Familiyangiz" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Telefon raqam *</label>
+                        <input type="text" name="phone" required value="{{ initial.phone|default:'' }}" placeholder="+998 90 123 45 67" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-location-dot text-rose-600"></i> 2. Yetkazib berish manzili
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Shahar / Viloyat *</label>
+                            <input type="text" name="city" required value="{{ initial.city|default:'Toshkent shahri' }}" placeholder="Masalan: Toshkent shahri, Chilonzor tumani" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">To'liq manzil (ko'cha, uy, xonadon) *</label>
+                            <textarea name="address" rows="3" required placeholder="Masalan: Bunyodkor shoh ko'chasi, 42-uy, 15-xonadon" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">{{ initial.address|default:'' }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Kuryer uchun izoh (ixtiyoriy)</label>
+                            <input type="text" name="note" placeholder="Masalan: Domofon kodi 45, kechqurun yetkazilsin..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="pt-4 border-t border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-credit-card text-rose-600"></i> 3. To'lov usuli
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-slate-200 cursor-pointer hover:border-rose-400 bg-slate-50">
+                            <input type="radio" name="payment_method" value="cash" checked class="text-rose-600 focus:ring-rose-500">
+                            <div>
+                                <p class="text-xs font-bold text-slate-900">Qabul qilganda</p>
+                                <p class="text-[11px] text-slate-400">Naqd yoki karta</p>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-slate-200 cursor-pointer hover:border-rose-400 bg-slate-50">
+                            <input type="radio" name="payment_method" value="payme" class="text-rose-600 focus:ring-rose-500">
+                            <div>
+                                <p class="text-xs font-bold text-slate-900">Payme</p>
+                                <p class="text-[11px] text-slate-400">Online to'lov</p>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center gap-3 p-4 rounded-2xl border border-slate-200 cursor-pointer hover:border-rose-400 bg-slate-50">
+                            <input type="radio" name="payment_method" value="click" class="text-rose-600 focus:ring-rose-500">
+                            <div>
+                                <p class="text-xs font-bold text-slate-900">Click</p>
+                                <p class="text-[11px] text-slate-400">Online to'lov</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Order Items Summary -->
+            <div class="lg:col-span-5 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+                <h3 class="text-lg font-bold text-slate-900 pb-4 border-b border-slate-100 flex items-center justify-between">
+                    <span>Sizning buyurtmangiz</span>
+                    <span class="text-xs font-normal text-slate-400">({{ cart|length }} dona)</span>
+                </h3>
+
+                <div class="space-y-4 max-h-72 overflow-y-auto pr-1 divide-y divide-slate-100">
+                    {% for item in cart %}
+                        <div class="flex items-center gap-3 pt-3 first:pt-0">
+                            <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 p-1 shrink-0 flex items-center justify-center">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" class="max-h-full max-w-full object-contain">
+                                {% else %}
+                                    <i class="fa-solid fa-gear text-slate-300"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-slate-800 truncate">{{ item.product.name }}</h4>
+                                <p class="text-[11px] text-slate-400">{{ item.quantity }} dona × {{ item.price|floatformat:0 }} so'm</p>
+                            </div>
+                            <span class="text-xs font-extrabold text-slate-900 shrink-0">{{ item.total_price|floatformat:0 }} so'm</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 space-y-2 text-sm">
+                    <div class="flex justify-between text-slate-600">
+                        <span>Yetkazib berish:</span>
+                        <span class="text-emerald-600 font-bold">Bepul</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+                        <span class="font-extrabold text-slate-900">Jami to'lov:</span>
+                        <span class="text-2xl font-black text-rose-600">{{ cart.get_total_price|floatformat:0 }} so'm</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2 transition duration-200">
+                    <i class="fa-solid fa-check"></i> Buyurtmani tasdiqlash
+                </button>
+
+                <p class="text-[11px] text-slate-400 text-center">
+                    "Buyurtmani tasdiqlash" tugmasini bosish orqali siz xizmat ko'rsatish shartlariga rozilik bildirasiz.
+                </p>
+            </div>
+
+        </div>
+    </form>
+</div>
+{% endblock %}

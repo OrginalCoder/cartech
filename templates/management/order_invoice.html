@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Chek #{{ order.id }} - CarTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6 sm:p-12 text-gray-800">
+
+    <div class="max-w-3xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-gray-200">
+        
+        <!-- Print Button Header -->
+        <div class="no-print flex justify-between items-center mb-8 pb-4 border-b border-gray-100">
+            <button onclick="window.history.back()" class="text-xs text-gray-500 hover:underline">&larr; Orqaga</button>
+            <button onclick="window.print()" class="px-5 py-2 bg-rose-600 text-white font-bold text-xs rounded-xl shadow-md">
+                Chop etish (Print)
+            </button>
+        </div>
+
+        <!-- Invoice Brand Header -->
+        <div class="flex justify-between items-start pb-8 border-b border-gray-200">
+            <div>
+                <h1 class="text-2xl font-black text-gray-900 tracking-tight">Car<span class="text-rose-600">Tech</span></h1>
+                <p class="text-xs text-gray-500 mt-1">Avtomobil ehtiyot qismlari va servis</p>
+                <p class="text-xs text-gray-400 mt-0.5">Toshkent sh., Bunyodkor shoh ko'chasi, 42</p>
+                <p class="text-xs text-gray-400">+998 (71) 200-00-00 | support@cartech.uz</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs font-bold text-rose-600 uppercase tracking-wider block">Buyurtma cheki</span>
+                <span class="text-2xl font-black text-gray-900 font-mono">#{{ order.id }}</span>
+                <p class="text-xs text-gray-500 mt-1">Sana: {{ order.created_at|date:"d.m.Y H:i" }}</p>
+            </div>
+        </div>
+
+        <!-- Customer & Delivery Info -->
+        <div class="grid grid-cols-2 gap-8 py-6 border-b border-gray-200 text-xs">
+            <div>
+                <span class="text-gray-400 uppercase font-bold block mb-1">Mijoz ma'lumotlari:</span>
+                <p class="font-bold text-gray-900 text-sm">{{ order.full_name }}</p>
+                <p class="font-mono text-gray-700 mt-0.5">{{ order.phone }}</p>
+            </div>
+            <div>
+                <span class="text-gray-400 uppercase font-bold block mb-1">Yetkazib berish manzili:</span>
+                <p class="font-bold text-gray-800">{{ order.city }}</p>
+                <p class="text-gray-600 leading-relaxed">{{ order.address }}</p>
+                {% if order.note %}
+                    <p class="text-gray-500 italic mt-1">Izoh: "{{ order.note }}"</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="py-6">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="border-b-2 border-gray-200 text-gray-400 uppercase">
+                        <th class="py-2">№</th>
+                        <th class="py-2">Mahsulot</th>
+                        <th class="py-2">Artikul</th>
+                        <th class="py-2 text-center">Soni</th>
+                        <th class="py-2 text-right">Narxi</th>
+                        <th class="py-2 text-right">Jami</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for item in order.items.all %}
+                        <tr>
+                            <td class="py-3 text-gray-400">{{ forloop.counter }}</td>
+                            <td class="py-3 font-bold text-gray-800">{{ item.product.name }}</td>
+                            <td class="py-3 font-mono text-gray-500">{{ item.product.sku|default:"-" }}</td>
+                            <td class="py-3 text-center font-bold">{{ item.quantity }}</td>
+                            <td class="py-3 text-right">{{ item.price|floatformat:0 }} so'm</td>
+                            <td class="py-3 text-right font-bold">{{ item.get_cost|floatformat:0 }} so'm</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Summary & Totals -->
+        <div class="pt-6 border-t-2 border-gray-200 flex justify-between items-center text-sm">
+            <div>
+                <span class="text-xs text-gray-500">To'lov turi: <strong>{{ order.get_payment_method_display }}</strong></span>
+                <span class="block text-xs mt-0.5">Holati: 
+                    {% if order.is_paid %}<strong class="text-emerald-600">To'langan</strong>{% else %}<strong class="text-amber-600">To'lanmagan</strong>{% endif %}
+                </span>
+            </div>
+            <div class="text-right">
+                <span class="text-xs text-gray-500 block">Jami to'lov:</span>
+                <span class="text-2xl font-black text-rose-600">{{ order.total_amount|floatformat:0 }} so'm</span>
+            </div>
+        </div>
+
+        <!-- Footer signatures -->
+        <div class="mt-12 pt-8 border-t border-gray-200 grid grid-cols-2 gap-8 text-xs text-gray-500">
+            <div>
+                <p>Kuryer / Yetkazuvchi: ___________________</p>
+            </div>
+            <div class="text-right">
+                <p>Qabul qildi: ___________________</p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

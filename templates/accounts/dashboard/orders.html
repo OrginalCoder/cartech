@@ -1,0 +1,108 @@
+{% extends 'accounts/dashboard/base_dashboard.html' %}
+
+{% block title %}Buyurtmalarim | CarTech Dashboard{% endblock %}
+{% block header_title %}Buyurtmalarim tarixi{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6 max-w-7xl mx-auto">
+    
+    <!-- Status Filter Tabs -->
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 text-xs font-semibold">
+        <a href="{% url 'dashboard_orders' %}" class="px-4 py-2.5 rounded-xl transition whitespace-nowrap {% if not status_filter %} bg-rose-600 text-white shadow-md shadow-rose-600/20 {% else %} bg-slate-950 text-slate-400 hover:text-white border border-slate-800 {% endif %}">
+            Barchasi
+        </a>
+        <a href="{% url 'dashboard_orders' %}?status=pending" class="px-4 py-2.5 rounded-xl transition whitespace-nowrap {% if status_filter == 'pending' %} bg-rose-600 text-white shadow-md shadow-rose-600/20 {% else %} bg-slate-950 text-slate-400 hover:text-white border border-slate-800 {% endif %}">
+            Kutilmoqda
+        </a>
+        <a href="{% url 'dashboard_orders' %}?status=shipped" class="px-4 py-2.5 rounded-xl transition whitespace-nowrap {% if status_filter == 'shipped' %} bg-rose-600 text-white shadow-md shadow-rose-600/20 {% else %} bg-slate-950 text-slate-400 hover:text-white border border-slate-800 {% endif %}">
+            Yetkazilmoqda
+        </a>
+        <a href="{% url 'dashboard_orders' %}?status=delivered" class="px-4 py-2.5 rounded-xl transition whitespace-nowrap {% if status_filter == 'delivered' %} bg-rose-600 text-white shadow-md shadow-rose-600/20 {% else %} bg-slate-950 text-slate-400 hover:text-white border border-slate-800 {% endif %}">
+            Yetkazib berildi
+        </a>
+        <a href="{% url 'dashboard_orders' %}?status=cancelled" class="px-4 py-2.5 rounded-xl transition whitespace-nowrap {% if status_filter == 'cancelled' %} bg-rose-600 text-white shadow-md shadow-rose-600/20 {% else %} bg-slate-950 text-slate-400 hover:text-white border border-slate-800 {% endif %}">
+            Bekor qilingan
+        </a>
+    </div>
+
+    <!-- Orders Cards List -->
+    {% if orders %}
+        <div class="space-y-4">
+            {% for order in orders %}
+                <div class="bg-slate-950 rounded-3xl border border-slate-800 p-6 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800/80 gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-white font-mono font-bold text-sm flex items-center justify-center">
+                                #{{ order.id }}
+                            </span>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Buyurtma vaqti: {{ order.created_at|date:"d F Y, H:i" }}</h4>
+                                <p class="text-xs text-slate-400">To'lov: {{ order.get_payment_method_display }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Status badge -->
+                        <div>
+                            {% if order.status == 'delivered' %}
+                                <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-bold">
+                                    <i class="fa-solid fa-check mr-1"></i> Yetkazib berildi
+                                </span>
+                            {% elif order.status == 'shipped' %}
+                                <span class="px-3 py-1 bg-sky-500/10 text-sky-400 border border-sky-500/30 rounded-full text-xs font-bold">
+                                    <i class="fa-solid fa-truck mr-1"></i> Yetkazilmoqda
+                                </span>
+                            {% elif order.status == 'cancelled' %}
+                                <span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-full text-xs font-bold">
+                                    <i class="fa-solid fa-xmark mr-1"></i> Bekor qilindi
+                                </span>
+                            {% else %}
+                                <span class="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full text-xs font-bold">
+                                    <i class="fa-solid fa-clock mr-1"></i> Kutilmoqda
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Items inside -->
+                    <div class="space-y-3 py-2">
+                        {% for item in order.items.all %}
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500">
+                                        <i class="fa-solid fa-gear"></i>
+                                    </div>
+                                    <span class="text-slate-300 font-medium">{{ item.product.name }}</span>
+                                    <span class="text-slate-500 font-bold">× {{ item.quantity }} dona</span>
+                                </div>
+                                <span class="font-extrabold text-white">{{ item.get_cost|floatformat:0 }} so'm</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Footer Info -->
+                    <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                        <span class="text-slate-400">
+                            Yetkazish manzili: <strong class="text-slate-200">{{ order.city }}, {{ order.address }}</strong>
+                        </span>
+                        <div class="text-base font-black text-white">
+                            Jami: <span class="text-rose-500">{{ order.total_amount|floatformat:0 }} so'm</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-16 bg-slate-950 rounded-3xl border border-slate-800 p-8 space-y-3">
+            <div class="w-16 h-16 rounded-2xl bg-slate-900 text-slate-500 flex items-center justify-center text-3xl mx-auto">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">Ushbu toifada buyurtmalar mavjud emas</h3>
+            <p class="text-xs text-slate-400">Kerakli ehtiyot qismlarni do'konimizdan topishingiz mumkin.</p>
+            <a href="{% url 'product_list' %}" class="inline-block mt-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition">
+                Do'kon katalogiga o'tish
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
